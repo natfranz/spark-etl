@@ -2,14 +2,14 @@ default:
   default_args:
     owner: 'data_engineer'
     retries: 2
-    start_date: 2025-10-22
+    start_date: 2025-11-02
     catchup: false
 
 example_dag:
   description: 'Example DAG from dag-factory'
   schedule_interval: '@daily'
   tags:
-    - example
+    - dag_factory
 
   tasks:
     task_1:

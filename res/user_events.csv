@@ -1,0 +1,7 @@
+id,name,Value,timestamp,,,
+1,notification, true,1546333200,,,
+3,refresh,denied,1546334200,,,
+2,background,notDetermined,1546333611,,,
+3,refresh,4,1546333443,,,
+1,notification,false,1546335647,,,
+1,background,true,1546333546,,,

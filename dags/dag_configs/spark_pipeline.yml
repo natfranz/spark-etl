@@ -8,6 +8,9 @@ spark_pipeline:
     description: Spark job pipeline
     schedule_interval: null
     catchup: false
+    tags:
+      - dag_factory
+
     tasks:
       spark_process:
         operator: airflow.providers.apache.spark.operators.spark_submit.SparkSubmitOperator
