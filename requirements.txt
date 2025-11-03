@@ -1,0 +1,20 @@
+# Airflow providers
+apache-airflow==2.10.3
+apache-airflow-providers-apache-spark==4.11.2
+apache-airflow-providers-cncf-kubernetes==9.0.1
+
+# DAG Factory
+dag-factory==0.17.0
+
+# Data processing
+pyspark==3.5.3
+pandas==2.1.4
+
+# Testing
+pytest==8.3.3
+pytest-cov==6.0.0
+
+# Utilities
+python-dotenv==1.0.1
+pyyaml==6.0.2
+tenacity==8.5.0
