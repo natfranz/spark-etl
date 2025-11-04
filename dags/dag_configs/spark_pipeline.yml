@@ -5,7 +5,7 @@ default:
 
 spark_pipeline:
     description: Spark job pipeline
-    schedule_interval: null
+    schedule_interval: '@daily'
     catchup: false
     tags:
       - dag_factory
