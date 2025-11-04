@@ -30,14 +30,16 @@ services:
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
       AIRFLOW__CORE__PLUGINS_FOLDER: /opt/airflow/plugins
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW_CONN_SPARK_DEFAULT: spark://localhost:7077?deploy_mode=client
       AIRFLOW_HOME: /opt/airflow
-      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-arm64
       PYTHONPATH: /opt/airflow/include:/opt/airflow
     volumes:
       - ${PWD}/dags:/opt/airflow/dags
       - ${PWD}/include:/opt/airflow/include
       - ${PWD}/logs:/opt/airflow/logs
       - ${PWD}/res:/opt/airflow/data
+      - ${PWD}/res/output:/opt/airflow/data/output
       - ${PWD}/airflow:/opt/airflow/config
       - ${PWD}/tests:/opt/airflow/tests
     ports:
@@ -59,14 +61,16 @@ services:
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
       AIRFLOW__CORE__PLUGINS_FOLDER: /opt/airflow/plugins
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW_CONN_SPARK_DEFAULT: spark://localhost:7077?deploy_mode=client
       AIRFLOW_HOME: /opt/airflow
-      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-arm64
       PYTHONPATH: /opt/airflow/include:/opt/airflow
     volumes:
       - ${PWD}/dags:/opt/airflow/dags
       - ${PWD}/include:/opt/airflow/include
       - ${PWD}/logs:/opt/airflow/logs
       - ${PWD}/res:/opt/airflow/data
+      - ${PWD}/res/output:/opt/airflow/data/output
       - ${PWD}/airflow:/opt/airflow/config
       - ${PWD}/tests:/opt/airflow/tests
     depends_on:

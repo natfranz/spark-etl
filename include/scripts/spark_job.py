@@ -1,14 +1,59 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, row_number
+from pyspark.sql.window import Window
+from pyspark.sql.types import LongType
 
-spark = SparkSession.builder.appName('csv_processor').getOrCreate()
 
-# Read CSV
-df = spark.read.csv('/opt/airflow/data/sample.csv', header=True, inferSchema=True)
+def process_user_events(input_path, output_path):
+    """Simplified test: read, filter, write"""
+    spark = SparkSession.builder \
+        .appName('user_settings_etl') \
+        .getOrCreate()
 
-# Transform
-result = df.filter(df.value > 10).select('id', 'value')
+    # Read input
+    df = spark.read \
+        .option('header', 'true') \
+        .option('inferSchema', 'true') \
+        .csv(input_path)
 
-# Write output
-result.coalesce(1).write.mode('overwrite').csv('/opt/airflow/data/output/spark_result')
+    # Cast id and timestamp
+    df = df.withColumn('id', col('id').cast(LongType())) \
+        .withColumn('timestamp', col('timestamp').cast(LongType()))
 
-spark.stop()
+    print(f"Total events read: {df.count()}")
+    df.show()
+
+    # Window rank by timestamp per (id, name)
+    window_spec = Window.partitionBy('id', 'name').orderBy(col('timestamp').desc())
+    ranked_df = df.withColumn('rn', row_number().over(window_spec))
+    latest_df = ranked_df.filter(col('rn') == 1).drop('rn', 'timestamp')
+
+    print(f"Latest events after filtering: {latest_df.count()}")
+    latest_df.show()
+
+    # Aggregate to map
+    aggregated_df = latest_df.groupBy('id').agg(
+        {'value': 'max'}  # Simple aggregation for now
+    )
+
+    print(f"Aggregated rows: {aggregated_df.count()}")
+    aggregated_df.show()
+
+    # Write output
+    aggregated_df.write \
+        .mode('overwrite') \
+        .parquet(output_path)
+
+    print(f"Output written to {output_path}")
+
+    spark.stop()
+
+
+def main():
+    input_path = '/opt/airflow/data/user_events.csv'
+    output_path = '/opt/airflow/data/output/user_settings'
+    process_user_events(input_path, output_path)
+
+
+if __name__ == '__main__':
+    main()

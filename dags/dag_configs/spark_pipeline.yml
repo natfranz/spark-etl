@@ -3,7 +3,6 @@ default:
     owner: airflow
     start_date: 2025-11-01
 
-
 spark_pipeline:
     description: Spark job pipeline
     schedule_interval: null
@@ -12,11 +11,12 @@ spark_pipeline:
       - dag_factory
 
     tasks:
-      spark_process:
-        operator: airflow.providers.apache.spark.operators.spark_submit.SparkSubmitOperator
-        conn_id: spark_default
-        application: /opt/airflow/include/scripts/spark_job.py
-        conf:
-          spark.master: local[*]
-          spark.executor.memory: 2g
-          spark.driver.memory: 1g
+      spark_etl:
+        operator: airflow.operators.bash.BashOperator
+        bash_command: |
+          spark-submit \
+            --master local[*] \
+            --conf spark.executor.memory=4g \
+            --conf spark.driver.memory=2g \
+            --conf spark.sql.adaptive.enabled=true \
+            /opt/airflow/include/scripts/spark_job.py

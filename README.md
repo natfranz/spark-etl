@@ -49,3 +49,8 @@ Running Your Tests Inside the Container
 
 docker-compose exec airflow-webserver pytest /opt/airflow/tests/ -v
 docker-compose exec airflow-webserver pytest /opt/airflow/include/tests/ -v
+
+
+docker-compose exec airflow-webserver bash
+which java
+ls -al /usr/lib/jvm/
