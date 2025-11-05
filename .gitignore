@@ -126,36 +126,6 @@ target/
 # Scrapy
 .scrapy
 
-## Data
-# Often contains large or private data not suitable for Git
-data/
-postgres-db-volume/
-
 ## Translations
 *.mo
 *.pot
-
-## Package Manager Lock Files
-# It's generally recommended to commit these for applications
-# to ensure reproducible builds, but they are often
-# ignored for libraries. Uncomment as needed.
-#
-# pipenv
-#Pipfile.lock
-#
-# poetry
-#poetry.lock
-#poetry.toml
-#
-# pdm
-#pdm.lock
-#pdm.toml
-#
-# uv
-#uv.lock
-#
-# pixi
-#pixi.lock
-
-## Other Configuration
-# .python-version # pyenv
