@@ -54,3 +54,5 @@ docker-compose exec airflow-webserver pytest /opt/airflow/include/tests/ -v
 docker-compose exec airflow-webserver bash
 which java
 ls -al /usr/lib/jvm/
+
+docker-compose exec airflow-webserver pytest /opt/airflow/tests/test_spark_job.py -v
