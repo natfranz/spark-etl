@@ -5,52 +5,51 @@ from pyspark.sql.utils import AnalysisException
 import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def create_spark_session(app_name: str) -> SparkSession:
     """Initialize and return Spark session."""
     try:
         spark = SparkSession.builder.appName(app_name).getOrCreate()
-        logger.info(f"Spark session created: {app_name}")
+        logging.info(f"Spark session created: {app_name}")
         return spark
     except Exception as e:
-        logger.error(f"Failed to create Spark session: {e}")
+        logging.error(f"Failed to create Spark session: {e}")
         raise
 
 
 def extract_data(spark: SparkSession, input_path: str) -> DataFrame:
     """Read the CSV file and return DataFrame."""
     try:
-        logger.info(f"Reading data from {input_path}")
+        logging.info(f"Reading data from {input_path}")
         df = spark.read.option('header', 'true').csv(input_path)
 
         if df.count() == 0:
-            logger.warning(f"No data found in {input_path}")
+            logging.warning(f"No data found in {input_path}")
 
         return df
     except AnalysisException as e:
         if "Path does not exist" in str(e):
-            logger.error(f"File not found: {input_path}")
+            logging.error(f"File not found: {input_path}")
             raise FileNotFoundError(f"Input file does not exist: {input_path}")
         else:
-            logger.error(f"Analysis error while reading file: {e}")
+            logging.error(f"Analysis error while reading file: {e}")
             raise
     except Exception as e:
-        logger.error(f"Unexpected error reading file: {e}")
+        logging.error(f"Unexpected error reading file: {e}")
         raise
 
 
 def cast_columns(df: DataFrame) -> DataFrame:
     """Cast columns to correct data types."""
-    logger.info("Casting columns to correct types")
+    logging.info("Casting columns to correct types")
     return df.withColumn('id', col('id').cast('long')) \
         .withColumn('timestamp', col('timestamp').cast('long'))
 
 
 def get_latest_records(df: DataFrame) -> DataFrame:
     """Keep only the row with max timestamp for each (id, name)."""
-    logger.info("Filtering to latest records per id and name")
+    logging.info("Filtering to latest records per id and name")
     window = Window.partitionBy('id', 'name').orderBy(col('timestamp').desc())
 
     return df.withColumn('rank', row_number().over(window)) \
@@ -60,7 +59,7 @@ def get_latest_records(df: DataFrame) -> DataFrame:
 
 def create_settings_map(df: DataFrame) -> DataFrame:
     """Group by id and create map from name and value."""
-    logger.info("Creating settings map")
+    logging.info("Creating settings map")
     return df.groupBy('id').agg(
         map_from_arrays(
             collect_list('name'),
@@ -71,7 +70,7 @@ def create_settings_map(df: DataFrame) -> DataFrame:
 
 def transform_data(df: DataFrame) -> DataFrame:
     """Combine all transformation steps."""
-    logger.info("Starting data transformation pipeline")
+    logging.info("Starting data transformation pipeline")
 
     df = cast_columns(df)
     df = get_latest_records(df)
@@ -83,18 +82,18 @@ def transform_data(df: DataFrame) -> DataFrame:
 def load_data(df: DataFrame, output_path: str) -> None:
     """Write DataFrame to parquet."""
     try:
-        logger.info(f"Writing data to {output_path}")
+        logging.info(f"Writing data to {output_path}")
         df.write.mode('overwrite').parquet(output_path)
-        logger.info(f"Successfully wrote data to {output_path}")
+        logging.info(f"Successfully wrote data to {output_path}")
     except AnalysisException as e:
         if "Cannot overwrite" in str(e):
-            logger.error(f"Cannot overwrite path: {output_path}")
+            logging.error(f"Cannot overwrite path: {output_path}")
             raise
         else:
-            logger.error(f"Analysis error while writing file: {e}")
+            logging.error(f"Analysis error while writing file: {e}")
             raise
     except Exception as e:
-        logger.error(f"Unexpected error writing file: {e}")
+        logging.error(f"Unexpected error writing file: {e}")
         raise
 
 
@@ -115,20 +114,20 @@ def main():
 
         load_data(df_transformed, output_path)
 
-        logger.info("ETL pipeline completed successfully")
+        logging.info("ETL pipeline completed successfully")
 
     except FileNotFoundError as e:
-        logger.error(f"File error: {e}")
+        logging.error(f"File error: {e}")
 
     except AnalysisException as e:
-        logger.error(f"Spark analysis error: {e}")
+        logging.error(f"Spark analysis error: {e}")
 
     except Exception as e:
-        logger.error(f"Pipeline failed with error: {e}", exc_info=True)
+        logging.error(f"Pipeline failed with error: {e}", exc_info=True)
         raise
     finally:
         if spark:
-            logger.info("Stopping Spark session")
+            logging.info("Stopping Spark session")
             spark.stop()
 
 
